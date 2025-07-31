@@ -1,16 +1,22 @@
-FROM debian:bullseye-slim
+FROM amd64/alpine:latest
 
 # 安裝必要工具
-RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache wget unzip
 
-# 下載 PocketBase Linux 版本
-RUN curl -L https://github.com/pocketbase/pocketbase/releases/download/v0.22.11/pocketbase_0.22.11_linux_amd64.zip -o pb.zip \
-    && unzip pb.zip \
-    && rm pb.zip \
-    && chmod +x pocketbase
+# 設定工作目錄
+WORKDIR /app
 
-# 暴露 Render 會用的 PORT
-EXPOSE 8080
+# 下載 Linux AMD64 版本的 PocketBase
+RUN wget https://github.com/pocketbase/pocketbase/releases/download/v0.22.8/pocketbase_0.22.8_linux_amd64.zip \
+    && unzip pocketbase_0.22.8_linux_amd64.zip \
+    && rm pocketbase_0.22.8_linux_amd64.zip \
+    && chmod +x /app/pocketbase
 
-# 啟動命令
-CMD ["./pocketbase", "serve", "--http", "0.0.0.0:8080"]
+# 建立資料儲存資料夾
+RUN mkdir -p /app/pb_data
+
+# 開放對外 HTTP port
+EXPOSE 10000
+
+# 啟動 PocketBase，並指定資料夾存放 DB
+CMD ["./pocketbase", "serve", "--http=0.0.0.0:10000", "--dir", "/app/pb_data"]
