@@ -15,9 +15,6 @@ RUN wget https://github.com/pocketbase/pocketbase/releases/download/v0.22.8/pock
 # 建立資料儲存資料夾
 RUN mkdir -p /app/pb_data
 
-# ✅ 複製舊資料庫
-COPY pb_data ./pb_data
-
 
 # 開放對外 HTTP port
 EXPOSE 10000
